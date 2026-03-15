@@ -8,6 +8,7 @@ Stripe webhook processing service with subscription state machine, append-only l
 - **P1**: Retry queue for failed webhooks, DLQ, admin reprocess endpoint, background retry worker
 - **P2**: Metered billing usage table and aggregation
 - **Observability**: Structured logging (structlog), Prometheus metrics, custom error responses
+- **AI/ML**: Anomaly detection, NL query, churn prediction, revenue forecast, semantic search, conversational admin
 
 ## Quick Start
 
@@ -75,6 +76,36 @@ curl -X POST http://localhost:8000/v1/usage/records \
 # Get aggregated usage
 curl "http://localhost:8000/v1/usage/aggregate/cus_xxx?meter_name=api_calls&days=30"
 ```
+
+### AI Endpoints
+
+```bash
+# Anomaly detection (Isolation Forest)
+curl -X POST http://localhost:8000/v1/ai/anomaly/detect \
+  -H "Content-Type: application/json" -d '{"customer_id":"cus_xxx"}'
+
+# Natural language billing query (LLM when OPENAI_API_KEY set)
+curl -X POST http://localhost:8000/v1/ai/query \
+  -H "Content-Type: application/json" -d '{"question":"What is total revenue?","customer_id":"cus_xxx"}'
+
+# Churn risk score
+curl -X POST http://localhost:8000/v1/ai/churn/score \
+  -H "Content-Type: application/json" -d '{"customer_id":"cus_xxx"}'
+
+# Revenue forecast
+curl -X POST http://localhost:8000/v1/ai/forecast/revenue \
+  -H "Content-Type: application/json" -d '{"customer_id":"cus_xxx","horizon_days":30}'
+
+# Semantic search over ledger (embeddings when OPENAI_API_KEY set)
+curl -X POST http://localhost:8000/v1/ai/search/ledger \
+  -H "Content-Type: application/json" -d '{"query":"failed payments","top_k":5}'
+
+# Conversational admin
+curl -X POST http://localhost:8000/v1/ai/admin/chat \
+  -H "Content-Type: application/json" -d '{"message":"How many failed events?"}'
+```
+
+Set `OPENAI_API_KEY` for LLM and embeddings. Set `AI_FEATURES_ENABLED=false` to disable.
 
 ## Local Development
 
