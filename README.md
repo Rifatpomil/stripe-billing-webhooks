@@ -20,6 +20,8 @@ docker-compose up -d
 docker-compose exec app alembic upgrade head
 ```
 
+**Dashboard UI**: Open http://localhost:8000 for the billing dashboard (subscriptions, usage, AI insights, admin).
+
 ## API Endpoints
 
 ### Webhooks

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Billing Dashboard | Stripe Webhooks</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="logo">
+        <span class="logo-icon">◆</span>
+        <span>Billing</span>
+      </div>
+      <nav>
+        <button class="nav-btn active" data-tab="overview">
+          <span class="nav-icon">◉</span>
+          Overview
+        </button>
+        <button class="nav-btn" data-tab="subscriptions">
+          <span class="nav-icon">◎</span>
+          Subscriptions
+        </button>
+        <button class="nav-btn" data-tab="usage">
+          <span class="nav-icon">◐</span>
+          Usage
+        </button>
+        <button class="nav-btn" data-tab="ai">
+          <span class="nav-icon">◇</span>
+          AI Insights
+        </button>
+        <button class="nav-btn" data-tab="admin">
+          <span class="nav-icon">◈</span>
+          Admin
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="/docs" target="_blank" class="link">API Docs</a>
+        <a href="/health" target="_blank" class="link">Health</a>
+      </div>
+    </aside>
+    <main class="content">
+      <header class="header">
+        <h1 class="page-title">Dashboard</h1>
+        <div class="header-meta">
+          <span class="status-badge" id="statusBadge">Checking...</span>
+        </div>
+      </header>
+
+      <section class="tab-panel active" id="overview">
+        <div class="cards">
+          <div class="card">
+            <span class="card-label">Health</span>
+            <span class="card-value" id="healthStatus">—</span>
+          </div>
+          <div class="card">
+            <span class="card-label">API</span>
+            <span class="card-value" id="apiStatus">—</span>
+          </div>
+        </div>
+        <div class="block">
+          <h2>Quick Actions</h2>
+          <div class="quick-actions">
+            <a href="/docs" target="_blank" class="btn btn-secondary">Open API Docs</a>
+            <a href="/metrics" target="_blank" class="btn btn-secondary">View Metrics</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="subscriptions">
+        <div class="block">
+          <h2>Subscriptions by Customer</h2>
+          <div class="form-row">
+            <input type="text" id="subCustomerId" placeholder="Customer ID (e.g. cus_xxx)">
+            <button class="btn btn-primary" id="fetchSubs">Fetch</button>
+          </div>
+          <div class="output" id="subsOutput"></div>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="usage">
+        <div class="block">
+          <h2>Usage Aggregation</h2>
+          <div class="form-row">
+            <input type="text" id="usageCustomerId" placeholder="Customer ID">
+            <input type="text" id="usageMeter" placeholder="Meter name">
+            <input type="number" id="usageDays" value="30" min="1">
+            <button class="btn btn-primary" id="fetchUsage">Fetch</button>
+          </div>
+          <div class="output" id="usageOutput"></div>
+        </div>
+        <div class="block">
+          <h2>Create Usage Record</h2>
+          <div class="form-grid">
+            <input type="text" id="createCust" placeholder="Customer ID">
+            <input type="text" id="createSubItem" placeholder="Subscription item ID">
+            <input type="text" id="createMeter" placeholder="Meter name">
+            <input type="number" id="createQty" value="1" min="1">
+          </div>
+          <button class="btn btn-primary" id="createUsage">Create</button>
+          <div class="output" id="createUsageOutput"></div>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="ai">
+        <div class="block">
+          <h2>Natural Language Query</h2>
+          <div class="form-row">
+            <input type="text" id="nlQuestion" placeholder="e.g. What is the total revenue for cus_xxx?">
+            <input type="text" id="nlCustomer" placeholder="Customer ID (optional)">
+            <button class="btn btn-primary" id="askQuestion">Ask</button>
+          </div>
+          <div class="output ai-output" id="nlOutput"></div>
+        </div>
+        <div class="block">
+          <h2>Churn Score</h2>
+          <div class="form-row">
+            <input type="text" id="churnCustomer" placeholder="Customer ID">
+            <button class="btn btn-primary" id="fetchChurn">Get Score</button>
+          </div>
+          <div class="output" id="churnOutput"></div>
+        </div>
+        <div class="block">
+          <h2>Anomaly Detection</h2>
+          <div class="form-row">
+            <input type="text" id="anomalyCustomer" placeholder="Customer ID">
+            <button class="btn btn-primary" id="detectAnomaly">Detect</button>
+          </div>
+          <div class="output" id="anomalyOutput"></div>
+        </div>
+        <div class="block">
+          <h2>Semantic Search (Ledger)</h2>
+          <div class="form-row">
+            <input type="text" id="searchQuery" placeholder="e.g. invoice paid">
+            <button class="btn btn-primary" id="searchLedger">Search</button>
+          </div>
+          <div class="output" id="searchOutput"></div>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="admin">
+        <div class="block">
+          <h2>Reprocess Event</h2>
+          <div class="form-row">
+            <input type="text" id="reprocessEventId" placeholder="Event ID (evt_xxx)">
+            <button class="btn btn-primary" id="reprocessBtn">Reprocess</button>
+          </div>
+          <div class="output" id="reprocessOutput"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="/static/app.js"></script>
+</body>
+</html>

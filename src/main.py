@@ -2,9 +2,12 @@
 
 import asyncio
 import os
-from contextlib import asynccontextmanager
+from pathlib import Path
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
+from fastapi.responses import FileResponse
+from starlette.staticfiles import StaticFiles
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from src.api.routes import admin, ai, checkout, subscriptions, usage, webhooks
@@ -103,6 +106,15 @@ def create_app() -> FastAPI:
     @app.get("/metrics")
     async def metrics():
         return get_metrics_response()
+
+    # Dashboard UI
+    static_dir = Path(__file__).resolve().parent.parent / "static"
+    if static_dir.exists():
+        app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
+        @app.get("/")
+        async def serve_dashboard():
+            return FileResponse(static_dir / "index.html")
 
     return app
 
