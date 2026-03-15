@@ -32,6 +32,13 @@ class Settings(BaseSettings):
     webhook_retry_worker_enabled: bool = True
     webhook_retry_worker_interval_seconds: int = 60
 
+    # AI features
+    openai_api_key: str = ""
+    openai_model: str = "gpt-4o-mini"
+    openai_embedding_model: str = "text-embedding-3-small"
+    ai_features_enabled: bool = True
+    ai_anomaly_threshold_std: float = 3.0
+
 
 def get_settings() -> Settings:
     """Return settings. Cached in production; bypass cache when TESTING=1."""
