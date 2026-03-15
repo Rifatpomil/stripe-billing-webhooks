@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from src.api.routes import admin, checkout, subscriptions, usage, webhooks
+from src.api.routes import admin, ai, checkout, subscriptions, usage, webhooks
 from src.config import get_settings
 from src.exceptions import AppError
 from src.logging_config import configure_logging, get_logger
@@ -94,6 +94,7 @@ def create_app() -> FastAPI:
     app.include_router(checkout.router, prefix="/v1")
     app.include_router(admin.router, prefix="/v1")
     app.include_router(usage.router, prefix="/v1")
+    app.include_router(ai.router, prefix="/v1")
 
     @app.get("/health")
     async def health():
